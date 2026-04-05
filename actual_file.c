@@ -2,10 +2,6 @@
 
 int main() {
 	int *numbrs = init(2);
-	
-	/*for(int i=0;i<((god_stuff *)numbrs - 1)->total;i++) {
-		push(numbrs,i+2);
-	}*/
 
 	push(numbrs,1,2,3);
 	push(numbrs,4,5);
