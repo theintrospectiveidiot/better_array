@@ -30,16 +30,16 @@ typedef struct {
 
 Now, this goes right before our array. How? Watch it [here](https://youtu.be/gtk3RZHwJUA) or continue reading.
 
-What we essentially do is store the array with its metadata like this:
+What we essentially do is store the `array` with its `metadata` like this:
 
 ```c
 [metadata][array]
 ^
 ```
 
-()`metadata` is of type `god_stuff` and `array` is of type `int` here)
+(`metadata` is of type `god_stuff` and `array` is of type `int` here)
 
-And `metadata + 1` gives us:
+And `metadata + 1` takes us to the `array`:
 
 ```c
 [metadata][array]
@@ -75,3 +75,28 @@ int *init(int dim) {
 }
 ```
 
+So, its something like this:
+
+```c
+[headr][numbrs]
+       ^
+```
+
+To get metadata of `numbrs`, just do something like this:
+
+```c
+god_stuff *metadata = (god_stuff *)numbrs - 1;
+
+//And, now you have access to everything!
+
+metadata->dim           //dimension
+metadata->count         //How many have we filled
+metadata->traverse      //How to traverse through the array
+
+```
+
+Now we got our function, lets initialise in main():
+
+```c
+int *numbrs = init(3)   //Dimension is 3. It doesn't matter, works for n dimensions (n must be natural)
+```
