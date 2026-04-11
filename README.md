@@ -302,7 +302,7 @@ This was enough, but I just wanted to add colors for the error messages and its 
 
 The output for the program written in [trial.c](https://github.com/theintrospectiveidiot/better_array/blob/master/trial.c) is:
 
-[output.png](./output.png)
+![output.png](./output.png)
 
 ## Notes
 - This was fun
