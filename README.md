@@ -297,3 +297,11 @@ int *edd_array(int *a,int *b){
 }
 
 ```
+
+This was enough, but I just wanted to add colors for the error messages and its corresponding note... So, went ahead and wrote the [colors.h](https://github.com/theintrospectiveidiot/better_array/blob/master/colors.h). It has the `ERROR` and `NOTE` macros.
+
+## Notes
+- This was fun
+- This is cool
+- I'll use this all the time!
+
