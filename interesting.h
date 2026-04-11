@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<stdarg.h>
-#include "colours.h"
+#include "colors.h"
 
 typedef struct {
 	int *traverse;
@@ -52,7 +52,7 @@ int *edd_num_array(int a,int *b) {
 	int *numbrs = init(headr->dim,headr->traverse);
 	god_stuff *sum_headr = (god_stuff *)numbrs - 1;
 	
-	for (int i=0;i<sum_headr->total;i++) {
+	for (int i=0;i<headr->count;i++) {
 		push(numbrs,b[i] + a);
 	}
 
@@ -84,6 +84,10 @@ int check_shape (int *a,int *b) {
 	return shape;
 }
 
+int min(int a,int b) {
+	return (((a-b) >= 0) ? b:a);
+}
+
 int *edd_array(int *a,int *b){
 	god_stuff *headr1 = (god_stuff *)a - 1;
 	god_stuff *headr2 = (god_stuff *)b - 1;
@@ -101,7 +105,7 @@ int *edd_array(int *a,int *b){
 	int *sum = init(headr1->dim,headr1->traverse);
 	god_stuff *sum_headr = (god_stuff *)sum -1;
 	
-	for(int i=0;i<sum_headr->total;i++) {
+	for(int i=0;i<min(headr1->count,headr2->count);i++) {
 		push(sum,a[i]+b[i]);
 	}
 	
