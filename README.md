@@ -163,10 +163,137 @@ int summon(int *numbrs,...) {
 	va_end(arg);
 	int val = 0;
 	for(int i=0;i<headr->dim;i++) {
-		val += location[i]*headr->strides[i];
+		val += location[i]*headr->strides[i];     //See? strides make it easier! 
 	}
 	return numbrs[val];
 }
 
 ```
 
+## Even cooler part!! (Vectorization)
+
+So, in numpy array, suppose `numbrs` is a numpy array, `numbrs + 5` is valid and would add 5 to every element of `numbrs`.
+
+And we can do that here too!!
+
+But, I didn't wanna call different functions for different operations! Obviously, had to write different functions for different operations, I just wanted to call them by one single function!
+
+Here comes `_Generic`, the closest thing thing to Generics in C. So, what I did is essentially function overloading but I manually had to write different functions and assign their pointers to the arguments accordingly.
+
+```c
+
+#define edd(a,b) _Generic((a), \
+	int: _Generic((b), \            //Check for b if a is int      		
+		int: edd_num, \              
+		int*: edd_num_array), \
+	int*: _Generic((b), \           //Check for b is a is int*
+		int: edd_array_num, \
+		int*: edd_array) \
+)(a,b)
+
+```
+
+And the functions are here:
+
+```c
+
+int *edd_array(int *a,int *b);
+
+int *edd_num_array(int a,int *b);
+
+int *edd_array_num(int *a,int b) {
+	return edd_num_array(b,a);
+}
+
+int edd_num(int a,int b) {
+	return a + b;
+}
+
+int *edd_num_array(int a,int *b) {
+	god_stuff *headr = (god_stuff *)b - 1;
+
+	if(headr->make_sure != 28602529) {
+		ERROR("can't vectorize standard C arrays");
+		NOTE("enter god_stuff arrays as arguments instead");                //These are macros defined in colors.h
+		exit(1);
+	}
+	
+	int *numbrs = init(headr->dim,headr->traverse);
+	god_stuff *sum_headr = (god_stuff *)numbrs - 1;
+	
+	for (int i=0;i<headr->count;i++) {                                      //We don't know, the array might not be filled completely, so, we can't update the count of `sum` to the total, so, to avoid that, we iterate it like this.
+		push(numbrs,b[i] + a);
+	}
+
+	return numbrs;
+}
+
+
+```
+
+But, we gotta be more safe while adding two different arrays, cuz different shape arrays cant be added. So, a function for that would be enough.
+
+```c
+
+int check_shape (int *a,int *b) {
+	god_stuff *headr1 = (god_stuff *)a - 1;
+	god_stuff *headr2 = (god_stuff *)b - 1;
+
+	int shape = 1;
+
+	if (headr1->make_sure != 28602529 || headr2->make_sure != 28602529) {
+		shape = -1;
+		return shape;
+	}
+
+	if (headr1->dim != headr2->dim) {
+		shape = 0;
+		return shape;
+	}
+	
+	for(int i=0;i<headr1->dim;i++) {
+		if(shape == 0) {
+			break;
+		}
+		shape = (headr1->traverse[i] == headr2->traverse[i]);
+	}
+	return shape;
+}
+
+```
+
+This returns -1 if the array is not having proper metadata, and 0 if the dimensions or shape don't match.
+
+So, our `edd_array` is basically:
+
+```c
+
+int min(int a,int b) {
+	return (((a-b) >= 0) ? b:a);
+}
+
+int *edd_array(int *a,int *b){
+	god_stuff *headr1 = (god_stuff *)a - 1;
+	god_stuff *headr2 = (god_stuff *)b - 1;
+
+	if (check_shape(a,b) == 0) {
+		ERROR("can't add two god_stuff arrays of different shapes");            //Prints that specific error message and exits
+		exit(1);
+	}
+
+	else if (check_shape(a,b) == -1) {
+		ERROR("can't perform 'edd' operation on standard C arrays");
+		NOTE("enter god_stuff arrays as arguments instead");                    //Prints that specific error message and exits
+	}
+
+	int *sum = init(headr1->dim,headr1->traverse);
+	god_stuff *sum_headr = (god_stuff *)sum -1;
+	
+	for(int i=0;i<min(headr1->count,headr2->count);i++) {                       //We don't know, some elements of one array might not be filled completely...
+		push(sum,a[i]+b[i]);                                                    //this keeps track of count too! 
+	}
+	
+	return sum;
+}
+
+```
