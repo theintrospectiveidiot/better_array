@@ -99,7 +99,7 @@ Now we got our function, lets initialise in main():
 
 ```c
 int *numbrs = init(3,(int[]){3,3,3})   //Dimension is 3. It doesn't matter, works for n dimensions (n must be natural)
-                                       //A 3x3 matrix basically... Obviously can be decided at runtime too
+                                       //A 3x3x3 cube basically... Obviously can be decided at runtime too
 ```
 
 To get metadata of `numbrs`, just do something like this:
