@@ -21,10 +21,13 @@ The metadata we store is like this:
 ```c
 typedef struct {
 	int *traverse;   //The shape of the array basically
+	int *strides;    //The strides, which help in accessing data from each row and column
 	int dim;         //The dimension of the array
 	int count;       //How many elements have been filled in
 	int total;       //How many elements can be filled (from the shape)
 	int capacity;    //How many elements can be stored (from the memory stuff)
+	long make_sure;  //To make sure that the integer pointer we got as argument is initialised by init()
+	                 //helps in not corrupting memory when we try to vectorize it...
 } god_stuff;
 ```
 
@@ -51,27 +54,37 @@ This way, we can go from the array to its metadata to know about it, and move th
 We initialize our array like this:
 
 ```c
-#define CAPACITY 1024
-
-int *init(int dim) {
-	god_stuff *headr = malloc(sizeof(god_stuff) + (sizeof(int)*CAPACITY));    //allocating the memory
-	headr->count = 0;
-	headr->dim = dim;
-	headr->total = 1;
-	headr->traverse = malloc(sizeof(int)*headr->dim);
-	headr->capacity = CAPACITY;
-	for (int i=0;i<headr->dim;i++) {
-		scanf("%d",&headr->traverse[i]);               //can be given directly too, but taking from the user seemed
-		getchar();                                     //fine at the moment.
-		headr->total *= headr->traverse[i];
-	}
-
-	if(headr->total > headr->capacity) {
-		headr->capacity *= 2;                          
-		headr = realloc(headr,sizeof(god_stuff) + (sizeof(int)*headr->capacity));    //updates the capacity and reallocates the memory
-	}
-	int *numbrs = (int *)(headr + 1);
-    return numbrs;
+int *init(int dim,int *shape) {																				
+	god_stuff *headr = malloc(sizeof(god_stuff) + (sizeof(int)*CAPACITY));  
+	headr->make_sure = 28602529;             //Some key to ensure that the operation we are doing is on our array and not just some garbage in the memory
+	headr->count = 0;	
+	headr->dim = dim;	
+	headr->total = 1;														
+	headr->traverse = malloc(sizeof(int)*headr->dim);	
+	headr->strides = malloc(sizeof(int)*headr->dim);	
+	init_to_num(headr->strides,headr->dim,1);	
+	headr->capacity = CAPACITY;	
+	//printf("shape >> ");							
+	for (int i=0;i<headr->dim;i++) {			
+		//scanf("%d",&headr->traverse[i]);	
+		//getchar();
+		headr->traverse[i] = shape[i];										
+		headr->total *= headr->traverse[i];			
+	}			
+																
+	for (int i=0;i<headr->dim;i++) {								
+		for(int j=headr->dim - 1;j>=1+i;j-- ) {				
+			*(headr->strides + i) *= *(headr->traverse + j);	
+		}	
+	}																														
+	if(headr->total > headr->capacity) {					
+		while (headr->total > headr->capacity) {	
+			headr->capacity *= 2;	
+		}																							
+		headr = realloc(headr,sizeof(god_stuff) + (sizeof(int)*headr->capacity));	
+	}										
+	int *numbrs = (int *)(headr + 1);	
+    return numbrs;	
 }
 ```
 
@@ -80,6 +93,13 @@ So, its something like this:
 ```c
 [headr][numbrs]
        ^
+```
+
+Now we got our function, lets initialise in main():
+
+```c
+int *numbrs = init(3,(int[]){3,3,3})   //Dimension is 3. It doesn't matter, works for n dimensions (n must be natural)
+                                       //A 3x3 matrix basically... Obviously can be decided at runtime too
 ```
 
 To get metadata of `numbrs`, just do something like this:
@@ -92,11 +112,61 @@ god_stuff *metadata = (god_stuff *)numbrs - 1;
 metadata->dim           //dimension
 metadata->count         //How many have we filled
 metadata->traverse      //How to traverse through the array
+metadata->strides       //which no. u gotta multiply with the location coordinates to get that value... 
+                        //(cuz our array is flattened into 1 dimension and doesn't exist as some higher dimension array in the memory)
 
 ```
 
-Now we got our function, lets initialise in main():
+## Start doing cool stuff!!
+
+You can `push` elements into the array, and the count will keep track of the index! 
 
 ```c
-int *numbrs = init(3)   //Dimension is 3. It doesn't matter, works for n dimensions (n must be natural)
+
+#define push(numbrs,...) push_with_size(numbrs,sizeof((int[]){__VA_ARGS__})/sizeof(int),__VA_ARGS__)  //because u dont know how many elements you are pushing, so, a number which u dont need to worry about can be used internally
+
+int push_with_size(int *numbrs,int wow,...) {
+	va_list arg;
+	god_stuff *headr = (god_stuff *)numbrs - 1;
+	
+	va_start(arg,wow);
+	
+	for(int i=0;i<wow;i++) {
+		if(headr->count >= headr->total) {
+			printf("\nFull!\n");              //If it exceeds how many elements I need, shape will be ruined...
+			return 1;
+		}
+		
+		numbrs[headr->count] = va_arg(arg,int);
+		headr->count += 1;                   //for the next element to take the correct position
+	}
+
+	va_end(arg);
+	return 0;
+}
+
 ```
+
+Similarly, you can summon the element by giving its coordinates: 
+
+```c
+
+int summon(int *numbrs,...) {
+	va_list arg;
+	god_stuff *headr = (god_stuff *)numbrs - 1;
+	int location[headr->dim];
+
+	va_start(arg,numbrs);
+	for(int i=0;i<headr->dim;i++) {
+		location[i] = va_arg(arg,int);
+	}
+	va_end(arg);
+	int val = 0;
+	for(int i=0;i<headr->dim;i++) {
+		val += location[i]*headr->strides[i];
+	}
+	return numbrs[val];
+}
+
+```
+
