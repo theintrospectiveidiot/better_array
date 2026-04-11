@@ -28,9 +28,9 @@ int main() {
 	printf("count = %d\n",((god_stuff *)sum2 - 1)->count);
 	int *check = init(3,(int[]){3,3,3});
 
-	//int a = 2;
-	//int *ptr = &a;
-	//int *sum4 = edd(2,ptr);
+	int a = 2;
+	int *ptr = &a;
+	int *sum4 = edd(2,ptr);
 	
 
 	int *sum3 = edd(stuff,check);
