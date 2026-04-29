@@ -556,7 +556,7 @@ run: start_machine get_names do_stuff                   //call all the targets t
 
 So, just `make run MAIN=trial.c` would show u the magic!!
 
-I even used this in my [Linear_Regression.c](https://github.com/theintrospectiveidiot/Learning-Regression-the-hard-way/blob/master/Linear_Regression.c), obviously after a bit if modification, and it worked!! 
+I even used this in my [Linear_Regression.c](https://github.com/theintrospectiveidiot/Learning-Regression-the-hard-way/blob/master/Linear_Regression.c), obviously after a bit of modification, and it worked!! 
 
 ## P. S.
 - Writing this was fun.
