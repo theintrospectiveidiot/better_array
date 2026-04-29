@@ -356,7 +356,7 @@ The output for the program written in [trial.c](https://github.com/theintrospect
 
 ## Now, cooler-er part!!
 
-What if I somehow wanted to log the god_stuff arrays initalised? Like after initialising, I somehow get a record that it was initilaised correctly? with the dim and shape and all documeneted in some sort of a temporary file. And after the program ends, I can go into that file and see what happened? It sounds so cool, right? 
+What if I somehow wanted to log the `god_stuff` arrays initalised? Like after initialising, I somehow get a record that it was initilaised correctly? with the dim and shape and all documeneted in some sort of a temporary file. And after the program ends, I can go into that file and see what happened? It sounds so cool, right? 
 
 Well, how do we approach that? The first approach I thought was something like this:
 
@@ -392,10 +392,39 @@ dimension: 2, shape (row major order): 2, 2
 
 This is fine, but i was bored and I had written a [lexical analyzer](https://github.com/theintrospectiveidiot/better_array/blob/master/tokenizer.c) a week before, so, I got a bit ambitious...
 
+## SKY IS THE LIMIT!!
+
+What if i also wanted the name if the integer pointer whose metadata is in my `logs.txt`? That'd be so cool, right?
+
+My initial idea was something like this:
+
 ```
 
 source file -> tokenizer ------------> (get the identifier name just before that) -> put that in a temp file -> interesting.h reads from that temp file -> knows the name puts that in "logs.txt" -> Done!!!
-                             read "init"      (that must be our variable name)
+                          read "init"        (that must be our variable name)
+
+```
+
+About the tokenizer:
+
+It tokenizes the C source file and categorizes the tokens into identifiers, numbers, keywords, operators, comments, whitespaces, punctuations, etc.
+It is similar to a finite state machine, has different modes when tokenizing that stuff...
+Pretty basic in my view...
+
+Anyways, it can identify tokens, so obviously, when calling `init()`, the identifier just before it has to be the name of the ptr, right? No? It has to be! Its a rule!!
+
+Now that being said, `int *numbrs = init();` and 
+
+```c
+int *numbrs;
+numbrs = init();
+```
+
+both follow that. So, somehow, if we got that name of that identifier just before `init`, (`init` is a an identifier), put that name into `input.txt`, and i could read from that file in the header file... 
+
+Did some modifications in the tokenizer:
+
+```c
 
 ```
 
