@@ -1,11 +1,18 @@
 #include "interesting.h" 
 
-int main() {
+int main(int argc,char *argv[]) {
+
+    f = fopen("logs.txt","w");
+    int cond;
+
+    printf("Please: ");
+    scanf("%d",&cond);
+
 	int *numbrs = init(2,(int[]){2,2});
-	push(numbrs,1,2,3);
+    push(numbrs,1,2,3);
 
 	int *stuff = init(2,(int[]){2,2});
-	push(stuff,1,2,3,4);
+    push(stuff,1,2,3,4);
 	
 	printf("%d\n",edd(1,9));
 
@@ -27,12 +34,22 @@ int main() {
 	printf("count = %d\n",((god_stuff *)sum - 1)->count);
 	printf("count = %d\n",((god_stuff *)sum2 - 1)->count);
 	int *check = init(3,(int[]){3,3,3});
+    int *hmm = init(4,(int[]){4,4,4,4}); 
+   
+    int *yes;
+    int *no;
 
-	int a = 2;
+    if (cond == 1) {
+        yes = init(2,(int[]){2,2});
+    }
+    else {no = init(3,(int[]){3,3,3});} 
+
+    int a = 2;
 	int *ptr = &a;
 	int *sum4 = edd(2,ptr);
 	
 
 	int *sum3 = edd(stuff,check);
-	
+
+    int lmnop = 123;	
 }

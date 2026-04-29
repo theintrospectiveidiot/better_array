@@ -3,6 +3,9 @@
 #include<stdarg.h>
 #include "colors.h"
 
+FILE *f; 
+FILE *g;
+
 typedef struct {
 	int *traverse;
 	int *strides;
@@ -14,6 +17,7 @@ typedef struct {
 } god_stuff;
 
 #define push(numbrs,...) push_with_size(numbrs,sizeof((int[]){__VA_ARGS__})/sizeof(int),__VA_ARGS__)
+#define init(dim,...) init_with_name(0,dim,__VA_ARGS__)
 
 #define CAPACITY 1024
 
@@ -28,7 +32,7 @@ int push_with_size(int *numbrs,int wow,...);
 		int*: edd_array) \
 )(a,b)
 
-int *init(int dim,int *shape);
+int *init_with_name(int mode,int dim,int *shape,...);
 
 int *edd_array(int *a,int *b);
 int *edd_num_array(int a,int *b);
@@ -49,7 +53,7 @@ int *edd_num_array(int a,int *b) {
 		exit(1);
 	}
 	
-	int *numbrs = init(headr->dim,headr->traverse);
+	int *numbrs = init_with_name(1,headr->dim,headr->traverse);
 	god_stuff *sum_headr = (god_stuff *)numbrs - 1;
 	
 	for (int i=0;i<headr->count;i++) {
@@ -102,7 +106,7 @@ int *edd_array(int *a,int *b){
 		NOTE("enter god_stuff arrays as arguments instead");
 	}
 
-	int *sum = init(headr1->dim,headr1->traverse);
+	int *sum = init_with_name(1,headr1->dim,headr1->traverse);
 	god_stuff *sum_headr = (god_stuff *)sum -1;
 	
 	for(int i=0;i<min(headr1->count,headr2->count);i++) {
@@ -114,7 +118,7 @@ int *edd_array(int *a,int *b){
 
 void init_to_num(int *A,int size,int num);
 
-int *init(int dim,int *shape) {																				
+int *init_with_name(int mode,int dim,int *shape,...) {
 	god_stuff *headr = malloc(sizeof(god_stuff) + (sizeof(int)*CAPACITY));  
 	headr->make_sure = 28602529;
 	headr->count = 0;	
@@ -144,13 +148,38 @@ int *init(int dim,int *shape) {
 		headr = realloc(headr,sizeof(god_stuff) + (sizeof(int)*headr->capacity));	
 	}										
 	int *numbrs = (int *)(headr + 1);	
+    
+    if (!mode) {
+        char *name;
+               
+        va_list arg;
+        va_start(arg,shape);
+
+        name = va_arg(arg,char*);
+
+        //fscanf(g,"%d %s",&ptr_count,name);
+        //printf("%d %s\n",ptr_count,name);
+        
+        va_end(arg);
+
+        fprintf(f,"\ngod_stuff array initailized\n\nname: %s\nlocation (of data): [%p]\ndimension: %d, shape (row major order): ",name,numbrs,dim);
+        for (int i=0;i<headr->dim;i++) {
+        fprintf(f,"%d%s",shape[i],(i == (headr->dim)-1) ? "\n":", ");
+        }
+    }
     return numbrs;	
 }
 
 int push_with_size(int *numbrs,int wow,...) {
 	va_list arg;
 	god_stuff *headr = (god_stuff *)numbrs - 1;
-	
+    
+    if (headr->make_sure != 28602529) {
+        ERROR("can't push stuff into normal C arrays");
+        NOTE("cuz they aren't cool. enter god_stuff array instead");
+        exit(1);
+    }
+
 	va_start(arg,wow);
 	
 	for(int i=0;i<wow;i++) {
@@ -171,6 +200,13 @@ int push_with_size(int *numbrs,int wow,...) {
 int summon_by_array(int *numbrs,int *location) {
 	god_stuff *headr = (god_stuff *)numbrs - 1;
 	int *traversal = headr->traverse;
+
+    if (headr->make_sure != 28602529) {
+        ERROR("can't summon stuff from normal C arrays");
+        NOTE("cuz they aren't cool. enter god_stuff array instead");
+        exit(1);
+    }
+
 	
 	int val = 0;
 
@@ -185,7 +221,15 @@ int summon_by_array(int *numbrs,int *location) {
 
 int summon(int *numbrs,...) {
 	va_list arg;
-	god_stuff *headr = (god_stuff *)numbrs - 1;
+	god_stuff *headr = (god_stuff *)numbrs - 1;    
+
+    if (headr->make_sure != 28602529) {
+        ERROR("can't summon stuff from normal C arrays");
+        NOTE("cuz they aren't cool. enter god_stuff array instead");
+        exit(1);
+    }
+
+
 	int location[headr->dim];
 
 	va_start(arg,numbrs);
