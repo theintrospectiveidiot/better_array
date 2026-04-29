@@ -117,7 +117,55 @@ metadata->strides       //which no. u gotta multiply with the location coordinat
 
 ```
 
+## How does it work?
+
+The main idea behind this is that you can store the data in the manner u like, and do the desired as long as u interpret it correctly.
+
+Suppose I want a 2 dimensional integer array, I'll usually do `int arr[a][b];` to declare it, and later I can put values into it by:
+
+```c
+arr = {{41,42,43,...},{67,68,69,...},{419,420,421,...},...};
+```
+
+But, what if there was a 'better' way of doing that? 
+
+What if we did something like this?
+
+Every array is stored as an one dimensional array but interpreted as you wanted? Here's where strides come into play and they do most of the cool stuff!
+
+let's say I want a 3x3 integer array, so, i do `int *numbrs = init(2,(int[]){2,3});` 
+
+What does it do? it initialises a 2D array with 3 columns and 2 rows. suppose I wanna store 1 to 6 in that.
+
+My data is stored like this
+
+```c
+       1 2 3 4 5 6
+       ^
+[headr][numbrs]
+```
+
+But i wanna interpret it as something like this:
+
+```c
+numbrs[0][0] = 1    numbrs[0][1] = 2    numbrs[0][2] = 3
+numbrs[1][0] = 4    numbrs[1][1] = 5    numbrs[1][2] = 6
+```
+
+My data is stored as 1D array, now, the strides for numbrs are:
+
+```c
+strides[0] = 3;
+strides[1] = 1;
+```
+
+I can get `numbrs[a][b]` by `numbrs[strides[0]*a + strides[0]*b]`. So, `numbrs[1][1]` is `numbrs[strides[1]*1 + strides[0]*1]` which is `numbrs[3*1 + 1*1]` which is `numbrs[4]` which is `5`. which is the same if i were to do it with a 2D std C array.
+
+So, my strides basically say how much to move when u go a dimension above. Here, every row had 3 columns, so, for moving to the next row, u gotta go after 3 elements. Simple. 
+
 ## Start doing cool stuff!!
+
+Now, that we understand how it works, we can implement them into storing and fetching desired elements!!!
 
 You can `push` elements into the array, and the count will keep track of the index! 
 
@@ -169,6 +217,8 @@ int summon(int *numbrs,...) {
 }
 
 ```
+
+
 
 ## Even cooler part!! (Vectorization)
 
