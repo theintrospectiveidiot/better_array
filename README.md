@@ -342,7 +342,9 @@ dimension: 2, shape (row major order): 2, 2
 
 This is fine, but i was bored and I had written a [lexical analyzer](https://github.com/theintrospectiveidiot/better_array/blob/master/tokenizer.c) a week before, so, I got a bit ambitious...
 
-```source file -> tokenizer ------------> (get the identifier name just before that) -> put that in a temp file -> interesting.h reads from that temp file -> knows the name puts that in "logs.txt" -> Done!!!
+```
+
+source file -> tokenizer ------------> (get the identifier name just before that) -> put that in a temp file -> interesting.h reads from that temp file -> knows the name puts that in "logs.txt" -> Done!!!
                              read "init"      (that must be our variable name)
 
 ```
