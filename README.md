@@ -558,6 +558,10 @@ So, just `make run MAIN=trial.c` would show u the magic!!
 
 I even used this in my [Linear_Regression.c](https://github.com/theintrospectiveidiot/Learning-Regression-the-hard-way/blob/master/Linear_Regression.c), obviously after a bit of modification, and it worked!! 
 
+You might see `init_with_name(0,...)`, that is basically the mode, `0` is for the arrays decalared by the user, only those are logged, yet... and `1` is for the arrays decalared in some function like `edd_num_array()` or `edd_array()`... These don't need to be logged, yet.
+
+The logging in `init_with_name()` happens only when mode is 0...
+
 ## P. S.
 - Writing this was fun.
 - This is cool af!!
