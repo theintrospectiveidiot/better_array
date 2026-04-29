@@ -411,7 +411,7 @@ It tokenizes the C source file and categorizes the tokens into identifiers, numb
 It is similar to a finite state machine, has different modes when tokenizing that stuff...
 Pretty basic in my view...
 
-Anyways, it can identify tokens, so obviously, when calling `init()`, the identifier just before it has to be the name of the ptr, right? No? It has to be! Its a rule!!
+Anyways, it can identify tokens, so obviously, when calling `init()`, the identifier just before it has to be the name of the ptr, right? No? It has to be! It's a rule!!
 
 Now that being said, `int *numbrs = init();` and 
 
@@ -425,11 +425,141 @@ both follow that. So, somehow, if we got that name of that identifier just befor
 Did some modifications in the tokenizer:
 
 ```c
+    else if (is_identifier(token)) {
+		//fprintf(f,"identifier %s\n",token);
+                                                                            
+        if (strcmp(token,"init") == 0) {
+            strcpy(name,temp_token);                            //since the prev token was the name!!
+
+            fprintf(h,"%d %s\n",init_count,temp_token);         //print that name with index in the file (input.txt)
+            init_count += 1;
+        }
+    
+        strcpy(temp_token,token);                               //store the current identifier into temp_token
+		return 1;                                               //1 is the index of identifier in the category, which is used for printing, read that for undertanding it better...
+	} 
+```
+
+And, in the [interesting.h](https://github.com/theintrospectiveidiot/better_array/blob/master/interesting.h), we add this in the `init()`:
+
+```c
+    fscanf(g,"%d %s",&ptr_count,name);                   //read the name from the file(input.txt)
+    //printf("%d %s\n",ptr_count,name);
+        
+    fprintf(f,"\ngod_stuff array initailized\n\nname: %s\nlocation (of data): [%p]\ndimension: %d, shape (row major order): ",name,numbrs,dim);
+    for (int i=0;i<headr->dim;i++) {
+    fprintf(f,"%d%s",shape[i],(i == (headr->dim)-1) ? "\n":", ");
+    }                                     //and print the name into logs.txt
+```
+
+so, doing this:
+
+```c
+int *numbrs = init(2,(int[]){2,3});
+int *stuff = init(3,(int[]){3,3,3});
+```
+
+would print into `logs.txt` as:
+
+```
+god_stuff array initailized
+
+name: numbrs
+location (of data): [0x2b579d38]
+dimension: 2, shape (row major order): 2, 3
+
+god_stuff array initailized
+
+name: stuff
+location (of data): [0x2b57bdb8]
+dimension: 3, shape (row major order): 3, 3, 3
 
 ```
 
+But this has flaws... 
+
+Like, what if my init was inside a conditional statement? My tokenizer puts the names with indices in the order it encounters them, so, i can have an if condition and inside that i can do init, and another init in the else block, my tokenizer would put both of them in `input.txt` and that would be not correct, if the condition was not satified, then the one in the else got initialised, but obviously the one in the if block's name would be written for the metadata of the one in the else block...
+
+The problem is that the condition being satisfied or not is something we know at runtime... So, we cant do anything pre-run time or complile time...
+
+Only somehow, if we give the name of the pointer as one of the arguments while calling `init()`, then, only the ones truly initialised would be logged, that's what we need to do!!
+
+Okay, I can't really explain everything, but the idea is that we tokenize, and put everything we have encountered before `init()` into a temp `stuff.c`, then switch `chaos` to 8, yeah, after millions of switching `wtf`s, that is something really simple. Now, if we are in `chaos == 8` mode, then when u encounter `;`, that means your `init` line has ended. So, u find the first `)` before that, and insert `,"name");` into that (we are doing this all in stuff.c because overwritting our main source file would obviously lose the data, i. e. the stuff written after the `;`, so doing that in `stuff.c` would be much much better!). 
+
+I did that with `fseek` and `fprintf` like this (this is inside the `ispunct()` condition):
+
+```c
+    if ((unsigned char)c == ';' && chaos == 8) {
+        //printf("at the end\n"); 
+        fseek(temp,-2,SEEK_CUR);                        //go back 2 characters.
+        char d = (unsigned char)fgetc(temp);            //going back 2 characters and doing fgetc is bacically getting the character just before where u initially were.
+                
+        while (d != ')') {
+            fseek(temp,-2,SEEK_CUR);
+            d = (unsigned char)fgetc(temp);
+            }                                           //u know, we can have white spaces between the ) and ;
+        
+            fseek(temp,-1,SEEK_CUR);                    //u are currently at the ')', so go back one character.
+            fprintf(temp,",\"%s\");",name);             //put the thing here, 
+            chaos = 0;                                  //switch chaos to 0 again, our work is done!!
+            continue;
+        }
+```
+
+This works for all!! Even conditional!!
+
+So, doing this:
+
+```c
+if (yes == 0) {
+    int *numbrs = init(1,(int[]){6});
+}
+else {
+    int *stuff = init(2,(int[]){2,2});
+}
+```
+
+and if `yes` is 0, then the log would say:
+
+```c
+god_stuff array initialised
+
+name: numbrs
+location (of data): [0x2b579d38]
+dimension: 1, shape (row major order): 6
+```
+
+else it would say soemthing like:
+
+```c
+god_stuff array initialised
+
+name: stuff
+location (of data): [0x2b579d38]
+dimension: 2, shape (row major order): 2, 2
+```
+
+To put this all together, I used make:
+
+```Makefile
+start_machine: tokenizer.c
+	gcc tokenizer.c -o tokenizer
+
+get_names: tokenizer $(MAIN)	
+	: > stuff.c && ./tokenizer $(MAIN)                  //wipe stuff.c, if doesn't exist, then create, and tokenize the source file.
+
+do_stuff: stuff.c input.txt                                                     
+	gcc stuff.c -o stuff && ./stuff                     //run stuff
+
+run: start_machine get_names do_stuff                   //call all the targets together!
+```
+
+So, just `make run MAIN=trial.c` would show u the magic!!
+
+I even used this in my [Linear_Regression.c](https://github.com/theintrospectiveidiot/Learning-Regression-the-hard-way/blob/master/Linear_Regression.c), obviously after a bit if modification, and it worked!! 
+
 ## P. S.
-- This was fun
-- This is cool
-- I'll use this all the time!
+- Writing this was fun.
+- This is cool af!!
+- I'll use this all the time!! (advise u to do it too!!)
 
