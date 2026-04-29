@@ -1,0 +1,30 @@
+
+god_stuff array initailized
+
+name: numbrs
+location (of data): [0x2b579d38]
+dimension: 2, shape (row major order): 2, 2
+
+god_stuff array initailized
+
+name: stuff
+location (of data): [0x2b57bdb8]
+dimension: 2, shape (row major order): 2, 2
+
+god_stuff array initailized
+
+name: check
+location (of data): [0x2b57ef08]
+dimension: 3, shape (row major order): 3, 3, 3
+
+god_stuff array initailized
+
+name: hmm
+location (of data): [0x2b57ff78]
+dimension: 4, shape (row major order): 4, 4, 4, 4
+
+god_stuff array initailized
+
+name: no
+location (of data): [0x2b580fe8]
+dimension: 3, shape (row major order): 3, 3, 3
