@@ -159,7 +159,7 @@ strides[0] = 3;
 strides[1] = 1;
 ```
 
-I can get `numbrs[a][b]` by `numbrs[strides[0]*a + strides[0]*b]`. So, `numbrs[1][1]` is `numbrs[strides[1]*1 + strides[0]*1]` which is `numbrs[3*1 + 1*1]` which is `numbrs[4]` which is `5`. which is the same if i were to do it with a 2D std C array.
+I can get `numbrs[a][b]` by `numbrs[strides[1]*a + strides[0]*b]`. So, `numbrs[1][1]` is `numbrs[strides[1]*1 + strides[0]*1]` which is `numbrs[3*1 + 1*1]` which is `numbrs[4]` which is `5`. which is the same if i were to do it with a 2D std C array.
 
 So, my strides basically say how much to move when u go a dimension above. Here, every row had 3 columns, so, for moving to the next row, u gotta go after 3 elements. Simple. 
 
@@ -492,7 +492,7 @@ I did that with `fseek` and `fprintf` like this (this is inside the `ispunct()` 
     if ((unsigned char)c == ';' && chaos == 8) {
         //printf("at the end\n"); 
         fseek(temp,-2,SEEK_CUR);                        //go back 2 characters.
-        char d = (unsigned char)fgetc(temp);            //going back 2 characters and doing fgetc is bacically getting the character just before where u initially were.
+        char d = (unsigned char)fgetc(temp);            //going back 2 characters and doing fgetc is bacically getting the character just before where u initially were because using fgetc advances by one character, so, ftell before fgetc and ftell now would differ by 1.
                 
         while (d != ')') {
             fseek(temp,-2,SEEK_CUR);
