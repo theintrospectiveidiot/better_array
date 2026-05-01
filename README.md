@@ -12,7 +12,7 @@ The main idea behind this is if you wanna use a 2D or a higher dimensional array
 
 ## Metadata and Data
 
-We need some sort of metadata (which stores stuff like `dimension`, how many `rows`, `coulumns`, the `height`, etc.).
+We need some sort of metadata (which stores stuff like `dimension`, how many `rows`, `columns`, the `height`, etc.).
 
 I saw this sort of implementation [here](https://youtu.be/gtk3RZHwJUA) and that has heavily inspired this project. (Do check it out, it's really nice.)
 
@@ -159,7 +159,8 @@ strides[0] = 3;
 strides[1] = 1;
 ```
 
-I can get `numbrs[a][b]` by `numbrs[strides[1]*a + strides[0]*b]`. So, `numbrs[1][1]` is `numbrs[strides[1]*1 + strides[0]*1]` which is `numbrs[3*1 + 1*1]` which is `numbrs[4]` which is `5`. which is the same if i were to do it with a 2D std C array.
+I can get `numbrs[a][b]` by `numbrs[strides[0]*a + strides[1]*b]`. So, `numbrs[1][1]` is `numbrs[strides[0]*1 + strides[1]*1]` which is `numbrs[3*1 + 1*1]` which is `numbrs[4]` which is `5`. which is the same if i were to do it with a 2D std C array.
+
 
 So, my strides basically say how much to move when u go a dimension above. Here, every row had 3 columns, so, for moving to the next row, u gotta go after 3 elements. Simple. 
 
