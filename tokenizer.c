@@ -15,6 +15,7 @@ int wtf;
 int chaos;
 
 FILE *h;
+FILE *f;
 
 int is_number(char *token) {
 	regex_t r;
@@ -105,6 +106,15 @@ int is_operator(char *token) {
 	return yes;
 }
 
+long depth;
+int init_at_depth;
+
+void nested (unsigned char c) {
+
+    depth += ((c == '(') ? 1:-1);
+
+}
+
 int what_is(char *token) {
 	//fprintf(f,"i received %s\n",token);
 	if (is_keyword(token)) {
@@ -118,12 +128,21 @@ int what_is(char *token) {
 		//fprintf(f,"identifier %s\n",token);
 
         if (strcmp(token,"init") == 0) {
-            strcpy(name,temp_token);
-
-            fprintf(stdout,"found init, and the variable name was %s\n",name);
+            if (chaos == 9) { 
+                //printf("bonjour, je suis chaos et je est 9\n");
+                strcpy(name,temp_token);
+                fprintf(stdout,"found init, and the variable name was %s\n",name);
+            }
+            //fprintf(f,"chaos est %d\n",chaos);
+            //fprintf(stdout,"found init, and the variable name was %s\n",name);
             //fprintf(h,"%d %s\n",init_count,temp_token);
+            if (chaos != 9) {
+                strcpy(name,"init was called without any ptr name");
+                fprintf(stdout,"found init, and the variable name wasnt declared\n");
+            }
             init_count += 1;
             chaos = 8;
+            init_at_depth = depth;
         }
 
         strcpy(temp_token,token);
@@ -138,17 +157,19 @@ int what_is(char *token) {
 
 int main(int argc,char *argv[]) {
 	FILE *g = fopen(argv[1],"r");
-    FILE *f = fopen("tok.txt","w");
+    f = fopen("tok.txt","w");
     h = fopen("input.txt","w");
     FILE *temp = fopen("stuff.c","r+");
     init_count = 0;
     line_count = 1;
+    init_at_depth = 0;
 
 	int c;
 	char token[1024];
 	int i = 0;
 	wtf = 0;
     chaos = 0;
+    depth = 0;
 
 	/*
 	wtf = 0 when nothing special is going on
@@ -162,7 +183,9 @@ int main(int argc,char *argv[]) {
     */
 
 	while ((c = fgetc(g)) != EOF) {
+        //fprintf(f,"bonjour, l'depth est %ld\n",depth);
         //fprintf(f,"%d:  ",line_count);
+        //printf("bonjour, chaos est %d\n",chaos);
         fputc(c,temp);
         //printf("bonjour! wtf = %d and c is %c and i is %d\n",wtf,c,i);
 		if((isalnum(c) || (unsigned char)c == '_') && wtf != 2 && wtf !=3 && wtf != 5 && wtf != 6 && wtf != 7) {
@@ -318,22 +341,35 @@ int main(int argc,char *argv[]) {
 		}
 
 		if (ispunct(c) && is_operator_single((unsigned char)c) == 0 && wtf != 2 && wtf != 3 && wtf != 5 && wtf != 6 && wtf != 7) {
-			//fprintf(f,"bonjour, je suis %c\n",(unsigned char)c);
+            //fprintf(f,"bonjour, je suis %c\n",(unsigned char)c);
             if (i > 0 && (unsigned char)c != '_') {
 				token[i] = '\0';
 				fprintf(f,"%s is %s\n",token,category[what_is(token)]);
 				i = 0;
 			}
+            
 			if (i > 0 && ((unsigned char)c == '_' && wtf == 4)) {
                 /*token[i] = '_';
                 i += 1;*/
                 continue;
             }
+            
+            if (i == 0 && ((unsigned char)c == ')' || (unsigned char)c == '(')) {
+                nested((unsigned char)c);
+            }
 
             if (i == 0)
                 fprintf(f,"%c is punctuation\n",(unsigned char)c);
 
-            if ((unsigned char)c == ';' && chaos == 8) {
+            if ((unsigned char)c == ';' && chaos == 9) {
+                chaos = 0;
+            }
+
+            if ((unsigned char)c == ',' && chaos == 9 && depth == init_at_depth) {
+                chaos = 0;
+            }
+
+            /*if (((unsigned char)c == ';' && chaos == 8) || (chaos == 8 && (unsigned char)c == ',' && init_at_depth == depth)) {
                 //printf("at the end\n"); 
                 fseek(temp,-2,SEEK_CUR);
                 char d = (unsigned char)fgetc(temp);;
@@ -344,11 +380,22 @@ int main(int argc,char *argv[]) {
                 }
 
                 fseek(temp,-1,SEEK_CUR);
-                fprintf(temp,",\"%s\");",name);
+                fprintf(temp,",\"%s\")%c",name,(unsigned char)c);
                 chaos = 0;
                 continue;
+            }*/
+
+            if ((unsigned char)c == '(' && chaos == 8) {
+                chaos = 10;
             }
-		}
+
+            if ((unsigned char)c == ')' && chaos == 10 && depth == init_at_depth) {
+		        fseek(temp,-1,SEEK_CUR);
+                fprintf(temp,",\"%s\")",name);
+                chaos = 0;
+                continue; 
+            }
+        }
 		
 		if (isspace(c) && wtf != 2 && wtf != 3 && wtf != 5 && wtf != 6 && wtf != 7){
 			//fprintf(f,"%s%c",token,(c == '\n') ? 10:32);
@@ -368,6 +415,10 @@ int main(int argc,char *argv[]) {
 
 		if (is_operator_single((unsigned char)c) && wtf != 2 && wtf != 3 && wtf != 5 && wtf != 6 && wtf != 7) {
 			//fprintf(f,"i received %c\n",(unsigned char)c);
+            if ((unsigned char)c == '=') {
+                chaos = 9;
+            }
+
 			if (i == 1 && is_operator_single(token[i - 1])) {
 				token[1] = (unsigned char)c;
 				i += 1;
@@ -383,17 +434,11 @@ int main(int argc,char *argv[]) {
 			}
 			else if (i >= 1) {
 				token[i] = '\0';
-				if (is_keyword(token)) {
-					token[i] = (unsigned char)c;
-					i += 1;
-				}
-				else {
-					fprintf(f,"%s is an identifier\n",token);
-					i = 0;
-					token[i] = (unsigned char)c;
-					i += 1;
-					wtf = 1;
-				}	
+                i = 0;
+				fprintf(f,"%s is %s\n",token,category[what_is(token)]);
+				token[i] = (unsigned char)c;
+				i += 1;
+				wtf = 1;	
 			}
 		}
 	}
