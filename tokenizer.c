@@ -182,6 +182,13 @@ int main(int argc,char *argv[]) {
 	wtf = 7 when u have encountered a single quote and maybe there is a double quote inside it and it might ruin the whole tokenizing process which u obviously don't want, do you?
     */
 
+    /*
+    chaos = 0 when no chaos, duh
+    chaos = 8 when u have encounetered init
+    chaos = 9 when u have encounetered '=' and u dont know whether the next thing is gonna be init or something... like when u encounter init, and chaos isnt 9, then it was not declared
+    chaos = 10 when chaos was 8 and '(' was found, so now searching for ')' with same depth
+    */
+
 	while ((c = fgetc(g)) != EOF) {
         //fprintf(f,"bonjour, l'depth est %ld\n",depth);
         //fprintf(f,"%d:  ",line_count);
