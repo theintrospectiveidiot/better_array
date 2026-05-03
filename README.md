@@ -617,22 +617,22 @@ So, implemented exactly that:
 
 ```c
 
-    if ((unsigned char)c == '(' && chaos == 8) {
-        chaos = 10;
-    }
+if ((unsigned char)c == '(' && chaos == 8) {
+chaos = 10;
+}
 
-    if ((unsigned char)c == ')' && chaos == 10 && depth == init_at_depth) {
-		fseek(temp,-1,SEEK_CUR);
-        fprintf(temp,",\"%s\")",name);
-        chaos = 0;
-        continue; 
-    }
+if ((unsigned char)c == ')' && chaos == 10 && depth == init_at_depth) {
+	fseek(temp,-1,SEEK_CUR);
+    fprintf(temp,",\"%s\")",name);
+    chaos = 0;
+    continue; 
+}
  
 ```
 
 Now, this is independent of `;` or `,`! So, this would work everywhere! Other than loops obviously because `arr[i] = init(...);` would need a parser to identify `arr[i]` as the thing i am assigning my ptr to...
 
-So, this whole process would convert this:
+Anyways, this whole process would convert this:
 
 ```c
 
