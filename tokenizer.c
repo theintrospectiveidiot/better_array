@@ -459,5 +459,7 @@ int main(int argc,char *argv[]) {
     fclose(g);
     fclose(h);
 
+    /*I can't wait to memorize this day, the picture cannot contain, the way it feels, u said live in the present, i am alredy dreaming of how it begins trying to savour the moment, but i know how the feeling will come to an end, so i crave, crave, to do it again , all again, crave, crave, to do it again, all again, just for a moment, it felt simple, i'm already missing it, so i crave, crave, to do it again, all again... */
+
 	//SO HAPPY!!!!!
 }
