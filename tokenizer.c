@@ -189,6 +189,11 @@ int main(int argc,char *argv[]) {
     chaos = 10 when chaos was 8 and '(' was found, so now searching for ')' with same depth
     */
 
+    /*
+    depth basically says how nested u are. depth is zero when u are outside of every bracket, and depth is counted based on () and not on {} or []...
+    */
+
+
 	while ((c = fgetc(g)) != EOF) {
         //fprintf(f,"bonjour, l'depth est %ld\n",depth);
         //fprintf(f,"%d:  ",line_count);
