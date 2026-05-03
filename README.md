@@ -385,7 +385,6 @@ that would print the output into logs.txt as something like:
 
 god_stuff array initailized
 
-name: numbrs
 location (of data): [0x2b579d38]
 dimension: 2, shape (row major order): 2, 2
 
@@ -395,7 +394,7 @@ This is fine, but i was bored and I had written a [lexical analyzer](https://git
 
 ## SKY IS THE LIMIT!!
 
-What if i also wanted the name if the integer pointer whose metadata is in my `logs.txt`? That'd be so cool, right?
+What if i also wanted the name of the integer pointer whose metadata is in my `logs.txt`? That'd be so cool, right?
 
 My initial idea was something like this:
 
