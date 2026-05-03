@@ -507,6 +507,10 @@ I did that with `fseek` and `fprintf` like this (this is inside the `ispunct()` 
         }
 ```
 
+What we are doing essentially, as mentioned before is when we find `init`, we switch to `chaos = 8` and wait for `;`. And then, go back to the closest `)` and one step back from there, and then inject the string.
+
+When we find `;`, it could have been something like `init(...)  ;` which means, directly going one step back wont help. Somehow, we need to ensure that we landing on the `)` just before `;`, for that the while loop is there...
+
 This works for all!! Even conditional!!
 
 So, doing this:
@@ -539,6 +543,65 @@ name: stuff
 location (of data): [0x2b579d38]
 dimension: 2, shape (row major order): 2, 2
 ```
+
+Hmm, all of this is good until, the user does some shit like `printf("ex ptr: %p\n",init(3,(int[]){3,3,3}));` now, our init call has no variable name! 
+In the logs, it'd be logged something like `name: printf` because that is the identifier just before init.
+
+To solve that we can use our `chaos`! So, the logic goes like this:
+
+Whenever u are assigning a ptr to a variable, i. e. using the `=`, switch to `chaos = 9` and then when u encounter `init`, check for `chaos == 9` if it is, then copy the name from `temp_token` to `name`, else, put the `name` as something like `init was declared without a ptr name`...
+
+```c
+
+    if (chaos == 9) { 
+        //printf("bonjour, je suis chaos et je est 9\n");
+        strcpy(name,temp_token);
+        fprintf(stdout,"found init, and the variable name was %s\n",name);
+    }
+    //fprintf(f,"chaos est %d\n",chaos);
+    //fprintf(stdout,"found init, and the variable name was %s\n",name);
+    //fprintf(h,"%d %s\n",init_count,temp_token);
+    if (chaos != 9) {
+        strcpy(name,"init was called without any ptr name");
+        fprintf(stdout,"found init, and the variable name wasnt declared\n");
+    }
+
+```
+
+Now, taking the previous example of `printf("ex ptr: %p\n",init(3,(int[]){3,3,3}));` doing the `fseek` surgery wont work here, because the outermost bracket doesnt belong to `init` but printf! Doing that `fseek` surgery would create code thats can't be compiled!
+
+The approach I used here was to track the nestedness (if that's a word) of my position... Like, in `init(...)` u can see that the identifier `init` and the outermost `)` are in the same depth and the arguments inside `init`, i. e. `...` have depth one more than `init`, cuz they are one level inside the `(`... This seems simple enough, so, wrote a function that does exactly this.
+
+```c
+
+void nested (unsigned char c) {
+    depth += ((c == '(') ? 1:-1);
+}
+
+```
+
+and we need to call it from the `ispunct()` condition:
+
+```c
+    
+    if (i == 0 && ((unsigned char)c == ')' || (unsigned char)c == '(')) {
+        nested((unsigned char)c);                                             //since we are calling that function iff we encounter '(' or ')', we can assert that we dont run into errors here... We still might, but this is just a fun project!!!
+    }
+
+```
+
+After we know the depth of our position, we can do the surgery in a much better way!!! 
+
+You see, we do something like this:
+
+```c
+
+encountered init && chaos is 9 ---> switch chaos to 8 ---> After the first encounter of '(' ----> switch chaos to 10 -----> find the ')' which is at depth = init_at_depth, then go one character back and put the name string!
+                            (and store the depth at init_at_depth)              (the mode for searching the ')' with same depth as init)
+
+```
+
+## Putting the pieces together
 
 To put this all together, I used make:
 
