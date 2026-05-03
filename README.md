@@ -551,6 +551,16 @@ To solve that we can use our `chaos`! So, the logic goes like this:
 
 Whenever u are assigning a ptr to a variable, i. e. using the `=`, switch to `chaos = 9` and then when u encounter `init`, check for `chaos == 9` if it is, then copy the name from `temp_token` to `name`, else, put the `name` as something like `init was declared without a ptr name`...
 
+But, after knowing that our `=` wasnt used or used for our `init` declaration, we need to switch it back to 0. So, somthing like this would work:
+
+```c
+
+    if (((unsigned char)c == ';' || (unsigned char)c == ',') && chaos == 9) {
+        chaos = 0;                                                              //Line ends or one assigning is done, then switch back. U cant assign 2 ptrs or values to one variable anyway...
+    }
+
+```
+
 ```c
 
     if (chaos == 9) { 
@@ -571,6 +581,8 @@ Whenever u are assigning a ptr to a variable, i. e. using the `=`, switch to `ch
 Now, taking the previous example of `printf("ex ptr: %p\n",init(3,(int[]){3,3,3}));` doing the `fseek` surgery wont work here, because the outermost bracket doesnt belong to `init` but printf! Doing that `fseek` surgery would create code thats can't be compiled!
 
 The approach I used here was to track the nestedness (if that's a word) of my position... Like, in `init(...)` u can see that the identifier `init` and the outermost `)` are in the same depth and the arguments inside `init`, i. e. `...` have depth one more than `init`, cuz they are one level inside the `(`... This seems simple enough, so, wrote a function that does exactly this.
+
+Declare `depth` as global variable and set it to `0` in `main()`. 
 
 ```c
 
@@ -600,6 +612,61 @@ encountered init && chaos is 9 ---> switch chaos to 8 ---> After the first encou
                             (and store the depth at init_at_depth)              (the mode for searching the ')' with same depth as init)
 
 ```
+
+So, implemented exactly that:
+
+```c
+
+    if ((unsigned char)c == '(' && chaos == 8) {
+        chaos = 10;
+    }
+
+    if ((unsigned char)c == ')' && chaos == 10 && depth == init_at_depth) {
+		fseek(temp,-1,SEEK_CUR);
+        fprintf(temp,",\"%s\")",name);
+        chaos = 0;
+        continue; 
+    }
+ 
+```
+
+Now, this is independent of `;` or `,`! So, this would work everywhere! Other than loops obviously because `arr[i] = init(...);` would need a parser to identify `arr[i]` as the thing i am assigning my ptr to...
+
+So, this whole process would convert this:
+
+```c
+
+int *stuff = init(2,B), *numbrs = init(3,A);
+
+int p = 3;
+
+int *numbrs = &p;
+
+init(p,A);
+
+printf("ptr = %p\n",init(3,A));
+
+```
+
+to:
+
+```c
+
+int *stuff = init(2,B,"stuff"), *numbrs = init(3,A,"numbrs");
+
+int p = 3;
+
+int *numbrs = &p;
+
+init(p,A,"init was called without any ptr name");
+
+printf("ptr = %p\n",init(3,A,"init was called without any ptr name"));
+
+```
+
+See, it works when we call inside from inside the `printf()` too!!
+
+So happy!!!
 
 ## Putting the pieces together
 
