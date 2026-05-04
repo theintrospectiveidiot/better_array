@@ -409,7 +409,6 @@ About the tokenizer:
 
 It tokenizes the C source file and categorizes the tokens into identifiers, numbers, keywords, operators, comments, whitespaces, punctuations, etc.
 It is similar to a finite state machine, has different modes when tokenizing that stuff...
-Pretty basic in my view...
 
 Anyways, it can identify tokens, so obviously, when calling `init()`, the identifier just before it has to be the name of the ptr, right? No? It has to be! It's a rule!!
 
