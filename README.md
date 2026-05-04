@@ -135,7 +135,7 @@ Every array is stored as an one dimensional array but interpreted as you wanted?
 
 let's say I want a 2x3 integer array, so, i do `int *numbrs = init(2,(int[]){2,3});` 
 
-What does it do? it initialises a 2D array with 3 columns and 2 rows. suppose I wanna store 1 to 6 in that.
+What does it do? it initialises a `god_stuff` array with dim 2 and the `traverse` is `{2,3}`. suppose I wanna store 1 to 6 in that.
 
 My data is stored like this
 
