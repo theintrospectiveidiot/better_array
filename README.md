@@ -390,7 +390,7 @@ dimension: 2, shape (row major order): 2, 2
 
 ```
 
-This is fine, but i was bored and I had written a [lexical analyzer](https://github.com/theintrospectiveidiot/better_array/blob/master/tokenizer.c) a week before, so, I got a bit ambitious...
+This is fine, but i was bored and I had just completed writing a [lexical analyzer](https://github.com/theintrospectiveidiot/better_array/blob/master/tokenizer.c) a week ago, so I got a bit ambitious... (Next section is probably the coolest part in this README...)
 
 ## SKY IS THE LIMIT!!
 
