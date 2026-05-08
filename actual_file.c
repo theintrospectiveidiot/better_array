@@ -1,10 +1,23 @@
 #include "interesting.h"
 
 int main() {
+    f = fopen("logs.txt","w");
+    
 	printf("dim >> ");
 	int dim;
 	scanf("%d",&dim);
-	int *numbrs = init(dim,(int[]){3,3,3});
+    int *shape = malloc(sizeof(int)*dim);
+
+    for (int i=0;i<dim;i++) {
+        scanf("%d",&(shape[i]));
+        getchar();
+    }
+    
+    //printf("%d %d\n",shape[0],shape[1]);
+    
+    //int stuff[2] = {2,2};
+
+	int *numbrs = init(dim,shape);
 
 	push(numbrs,1,2,3);
 	push(numbrs,4,5);
@@ -21,5 +34,6 @@ int main() {
 		printf("\n\n");
 	}*/
 
-	printf("desired num = %d\n",summon(numbrs,0,1,1));
+	printf("desired num = %d\n",summon(numbrs,0,1));
+    fclose(f);
 }
