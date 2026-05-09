@@ -9,11 +9,14 @@ do_stuff: stuff.c
 
 run: start_machine get_names do_stuff
 
+start_machine_cpp: tokenizer.cpp
+	clang++ tokenizer.cpp -o tokenizer
+
 get_names_cpp: tokenizer $(MAIN)	
 	: > stuff.cpp && ./tokenizer $(MAIN)
 
 do_stuff_cpp: stuff.cpp
 	clang++ -o stuff stuff.cpp && ./stuff
 
-walk: start_machine get_names_cpp do_stuff_cpp
+walk: start_machine_cpp get_names_cpp do_stuff_cpp
 
