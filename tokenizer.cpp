@@ -3,8 +3,8 @@
 #include<regex.h>
 #include<ctype.h>
 
-char *category[9] = {"a keyword","an identifier","a number","a string","an operator","a comment","punctuation","a whitespace","unknown"};
-char *keywords[19] = {"int","int*","float","float*","double","double*","char","char*","do","while","for","ssize_t","size_t","bool","if","else","break","continue","return"};
+const char *category[9] = {"a keyword","an identifier","a number","a string","an operator","a comment","punctuation","a whitespace","unknown"};
+const char *keywords[19] = {"int","int*","float","float*","double","double*","char","char*","do","while","for","ssize_t","size_t","bool","if","else","break","continue","return"};
 
 int line_count;
 char temp_token[1024];
@@ -56,8 +56,8 @@ return a == 0;
 
 }
 
-char *operators = "+-*/=><!^%|&?";
-char *operators2 = "><=|&";
+const char *operators = "+-*/=><!^%|&?";
+const char *operators2 = "><=|&";
 
 int is_operator2(char s) {
 	int yes = 0;
