@@ -697,6 +697,10 @@ In the C part, we had to do the function overloading manually, i. e. `_Generic()
 
 And guess what? It works! 
 
+This is the output for [trial.cpp](https://github.com/theintrospectiveidiot/better_array/blob/master/trial.cpp) which is the same as [trial.c](https://github.com/theintrospectiveidiot/better_array/blob/master/trial.c) except it includes the [interesting.hpp](https://github.com/theintrospectiveidiot/better_array/blob/master/interesting.hpp) as header file which has the `_Generic()` commented out...
+
+just doing `make walk MAIN=trial.cpp` would give this:
+
 ![cpp_output.png](./cpp_output.png)
 
 
