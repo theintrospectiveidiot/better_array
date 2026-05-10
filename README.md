@@ -672,13 +672,13 @@ To put this all together, I used make:
 
 ```Makefile
 start_machine: tokenizer.c
-	gcc tokenizer.c -o tokenizer
+	clang tokenizer.c -o tokenizer
 
 get_names: tokenizer $(MAIN)	
 	: > stuff.c && ./tokenizer $(MAIN)                  //wipe stuff.c, if doesn't exist, then create, and tokenize the source file.
 
 do_stuff: stuff.c input.txt                                                     
-	gcc stuff.c -o stuff && ./stuff                     //run stuff
+	clang stuff.c -o stuff && ./stuff                     //run stuff
 
 run: start_machine get_names do_stuff                   //call all the targets together!
 ```
@@ -690,6 +690,14 @@ I even used this in my [Linear_Regression.c](https://github.com/theintrospective
 You might see `init_with_name(0,...)`, that is basically the mode, `0` is for the arrays decalared by the user, only those are logged, yet... and `1` is for the arrays decalared in some function like `edd_num_array()` or `edd_array()`... These don't need to be logged, yet.
 
 The logging in `init_with_name()` happens only when mode is 0...
+
+I recently got to know that `c++` has built in Generics.
+
+In the C part, we had to do the function overloading manually, i. e. `_Generic()` but in `c++` you can just write the same function and make it do different things (redeclare it, etc.) based on the arguments' types and during compile time, it would create different functions based on the arguments' type. It seemed interesting, so I tried doing that in `c++`, commented out the `_Generic()` part and changed the functions' names to `edd()` in [interesting.hpp](https://github.com/theintrospectiveidiot/better_array/blob/master/interesting.hpp) and changed the [Makefile](https://github.com/theintrospectiveidiot/better_array/blob/master/Makefile) to include the `c++` compilation stuff. 
+
+And guess what? It works! 
+
+
 
 ## P. S.
 - Writing this was fun.
