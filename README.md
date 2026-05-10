@@ -697,6 +697,7 @@ In the C part, we had to do the function overloading manually, i. e. `_Generic()
 
 And guess what? It works! 
 
+![cpp_output.png](./cpp_output.png)
 
 
 ## P. S.
