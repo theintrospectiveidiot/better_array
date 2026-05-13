@@ -773,7 +773,18 @@ void goodbye_everybody() {
 
 ```
 
-which frees everything (declared by us or by the user).
+Also, we gotta give them the index, right?
+
+```c
+
+headr->index = how_many;
+people[how_many] = headr;
+//printf("%p bearing %s est %d\n",people[how_many],people[how_many]->name,how_many);
+how_many += 1;
+
+```
+
+which frees everything (declared by us or by the user)
 
 ## P. S.
 - Writing this was fun.
