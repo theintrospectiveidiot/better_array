@@ -1,25 +1,30 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
 #include "colors.h"
 
 FILE *f; 
 FILE *g;
 
 typedef struct {
-	int *traverse;
+	char *name;
+    int *traverse;
 	int *strides;
 	int dim;
 	int count;
 	int total;
 	int capacity;
 	long make_sure;
+    int mode;
 } god_stuff;
 
 #define push(numbrs,...) push_with_size(numbrs,sizeof((int[]){__VA_ARGS__})/sizeof(int),__VA_ARGS__)
 #define init(dim,...) init_with_name(0,dim,__VA_ARGS__)
 
 #define CAPACITY 1024
+
+god_stuff *people[CAPACITY];
+int how_many;
 
 int push_with_size(int *numbrs,int wow,...);
 
@@ -31,6 +36,23 @@ int push_with_size(int *numbrs,int wow,...);
 		int: edd_array_num, \
 		int*: edd_array) \
 )(a,b)
+
+void free_ptr(god_stuff *headr) {
+    
+    char* to_put = "\nfreed up %s from existence\n";
+    free(headr->traverse);
+    free(headr->strides);
+    
+    fprintf(f,to_put,(headr->mode == 0) ? headr->name:"an array not explicitly declared by the user but was probably needed");
+    free(headr);
+}
+
+void goodbye_everybody() {
+    how_many -= 1;
+    for (;how_many >= 0;how_many--) {
+        free_ptr(people[how_many]);
+    }
+}
 
 int *init_with_name(int mode,int dim,int *shape,...);
 
@@ -50,6 +72,7 @@ int *edd_num_array(int a,int *b) {
 	if(headr->make_sure != 28602529) {
 		ERROR("can't vectorize standard C arrays");
 		NOTE("enter god_stuff arrays as arguments instead");
+        goodbye_everybody();
 		exit(1);
 	}
 	
@@ -128,6 +151,7 @@ int *init_with_name(int mode,int dim,int *shape,...) {
 	headr->strides = malloc(sizeof(int)*headr->dim);	
 	init_to_num(headr->strides,headr->dim,1);	
 	headr->capacity = CAPACITY;	
+    headr->mode = mode;
 	//printf("shape >> ");							
 	for (int i=0;i<headr->dim;i++) {			
 		//scanf("%d",&headr->traverse[i]);	
@@ -155,18 +179,22 @@ int *init_with_name(int mode,int dim,int *shape,...) {
         va_list arg;
         va_start(arg,shape);
 
-        name = va_arg(arg,char*);
+        headr->name = va_arg(arg,char*);
 
         //fscanf(g,"%d %s",&ptr_count,name);
         //printf("%d %s\n",ptr_count,name);
         
         va_end(arg);
-
-        fprintf(f,"\ngod_stuff array initailized\n\nname: %s\nlocation (of data): [%p]\ndimension: %d, shape (row major order): ",name,numbrs,dim);
+        //fprintf(f,"bonjour, je suis mode et je est %d\n",mode);
+        fprintf(f,"\ngod_stuff array initialized\n\nname: %s\nlocation (of data): [%p]\ndimension: %d, shape (row major order): ",headr->name,numbrs,dim);
         for (int i=0;i<headr->dim;i++) {
         fprintf(f,"%d%s",shape[i],(i == (headr->dim)-1) ? "\n":", ");
         }
     }
+
+    people[how_many] = headr;
+    printf("%p bearing %s est %d\n",people[how_many],people[how_many]->name,how_many);
+    how_many += 1;
     return numbrs;	
 }
 
