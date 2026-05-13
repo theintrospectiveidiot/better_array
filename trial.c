@@ -52,13 +52,13 @@ int main(int argc,char *argv[]) {
     }
     else {no = init(3,(int[]){3,3,3});} 
 
-    /*free_ptr(stuff);
     free_ptr(numbrs);
-    free_ptr(sum);
+    free_ptr(stuff);
+    /*free_ptr(sum);
     free_ptr(check);
     free_ptr(sum2);
     free_ptr(yes);*/
-
+    printf("how_many = %d\n",how_many);
     goodbye_everybody();
 
     int a = 2;
