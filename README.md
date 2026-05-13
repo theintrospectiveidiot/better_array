@@ -720,7 +720,7 @@ int how_many;
 
 and then initialise them in `main()`.
 
-`free_ptr()` is defined this way, just to you know, not mess up for other calls `free_ptr()`'s:
+`free_ptr()` is defined this way, just to you know, not mess up the other `free_ptr()`'s calls:
 
 ```c
 
