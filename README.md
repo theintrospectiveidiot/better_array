@@ -23,11 +23,13 @@ typedef struct {
 	int *traverse;   //The shape of the array basically
 	int *strides;    //The strides, which help in accessing data from each row and column
 	int dim;         //The dimension of the array
-	int count;       //How many elements have been filled in
+    int count;       //How many elements have been filled in
 	int total;       //How many elements can be filled (from the shape)
 	int capacity;    //How many elements can be stored (from the memory stuff)
 	long make_sure;  //To make sure that the integer pointer we got as argument is initialised by init()
 	                 //helps in not corrupting memory when we try to vectorize it...
+    int mode;        //whether it was declared by the user or by us
+    int index;       //the index of this headr
 } god_stuff;
 ```
 
@@ -703,6 +705,75 @@ just doing `make walk MAIN=trial.cpp` would give this:
 
 ![cpp_output.png](./cpp_output.png)
 
+## goodbye everybody, I've got to go...
+
+freeing the memory after using it, so u can manually do that by calling `free_ptr()` or u can say adieu to all of them by `goodbye_everybody()`.
+
+I used an std C array of `god_stuff` pointers to get some sort of an index and put all the pointers of the `headrs` in one place...
+
+```c
+
+god_stuff *people[CAPACITY];
+int how_many;
+
+```
+
+and then initialise them in `main()`.
+
+`free_ptr()` is defined this way, just to you know, not mess up for other calls `free_ptr()`'s:
+
+```c
+
+void free_ptr(god_stuff *headr) {
+   
+    //printf("%s\n",headr->name);
+    //printf("%s %s\n",headr->name,people[headr->index]->name);
+   
+    
+
+    god_stuff *temp = people[headr->index];
+    people[headr->index] = people[how_many - 1];
+    people[how_many - 1] = temp;
+    
+    people[headr->index]->index = headr->index;
+    people[how_many - 1]->index = how_many - 1;
+
+    //printf("%s\n",headr->name);
+    printf("%s %s\n",people[headr->index]->name,people[how_many - 1]->name); 
+
+    how_many -= 1;
+
+    char* to_put = "\nfreed up %s [%p] from existence\n";
+    free(temp->traverse);
+    free(temp->strides);
+     
+    fprintf(f,to_put,(temp->mode == 0) ? temp->name:"an array not explicitly declared by the user but was probably needed",temp);
+    free(headr);
+
+}
+
+```
+
+The reason for such weirdness of this simple freeing the ptr call is to make sure that whatever you did didn't somehow mess up for other calls.
+If it were to be a simple call, which would display the message and free the pointer, then when we use something like `goodbye_everybody()`, we'd be doomed with bugs we haven't seen yet.
+This whole array is dependent on the indices, if I desired to free some pointer in between the array, then it would create problems for `goodbye_everybody()`. So, we swap them (the last one and this one) and then decrease the count by 1. That way, all my valid pointers are together and I can access them through indices. 
+
+So, we gotta swap the indices too, because if we dont do that then the last one would have the `index` as `how_many - 1` even if it is now sitting at the first place. And since we dont know at which position `headr` is, the only way to access it is by `headr->index`. And if we didn't have changed that index, then `headr->index` would've shown it original index and not the updated one, which obviously we don't want.
+
+Then, for all of them, call `goodbye_everybody()` from `main()` which is defined:
+
+```c
+
+void goodbye_everybody() {
+    int i = how_many - 1;
+    for (;i >= 0;i--) {
+        free_ptr(people[i]);
+    }
+}
+
+```
+
+which frees everything (declared by us or by the user).
 
 ## P. S.
 - Writing this was fun.
