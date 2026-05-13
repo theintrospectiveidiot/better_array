@@ -156,10 +156,20 @@ int what_is(char *token) {
 }
 
 int main(int argc,char *argv[]) {
-	FILE *g = fopen(argv[1],"r");
+	FILE *g = fopen(argv[2],"r");
+    
     f = fopen("tok.txt","w");
     h = fopen("input.txt","w");
-    FILE *temp = fopen("stuff.c","r+");
+    FILE *temp;
+    
+    if (!strcmp("-cpp",argv[1])) {
+        temp = fopen("stuff.cpp","r+");
+    }
+
+    else if (!strcmp("-c",argv[1])) {
+        temp = fopen("stuff.c","r+");
+    }
+
     init_count = 0;
     line_count = 1;
     init_at_depth = 0;
