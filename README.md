@@ -724,12 +724,12 @@ and then initialise them in `main()`.
 
 ```c
 
-void free_ptr(god_stuff *headr) {
+void free_ptr(int *numbrs) {
    
     //printf("%s\n",headr->name);
     //printf("%s %s\n",headr->name,people[headr->index]->name);
    
-    
+    god_stuff *headr = (god_stuff *)numbrs - 1;
 
     god_stuff *temp = people[headr->index];
     people[headr->index] = people[how_many - 1];
@@ -744,10 +744,10 @@ void free_ptr(god_stuff *headr) {
     how_many -= 1;
 
     char* to_put = "\nfreed up %s [%p] from existence\n";
-    free(temp->traverse);
-    free(temp->strides);
+    free(headr->traverse);
+    free(headr->strides);
      
-    fprintf(f,to_put,(temp->mode == 0) ? temp->name:"an array not explicitly declared by the user but was probably needed",temp);
+    fprintf(f,to_put,(headr->mode == 0) ? headr->name:"an array not explicitly declared by the user but was probably needed",numbrs);
     free(headr);
 
 }
