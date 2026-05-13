@@ -1,14 +1,22 @@
 #include "interesting.h" 
 
 int main(int argc,char *argv[]) {
+    
+    how_many = 0;
 
     f = fopen("logs.txt","w");
     int cond;
 
     printf("Please: ");
     scanf("%d",&cond);
+    
+    int owl = 2;
 
-	int *numbrs = init(2,(int[]){2,2});
+    int c_better = /*hello*/ 5;
+
+    printf("%d\n",c_better);
+
+	int *numbrs = init(owl,(int[]){2,2});
     push(numbrs,1,2,3);
 
 	int *stuff = init(2,(int[]){2,2});
@@ -44,10 +52,19 @@ int main(int argc,char *argv[]) {
     }
     else {no = init(3,(int[]){3,3,3});} 
 
+    /*free_ptr(stuff);
+    free_ptr(numbrs);
+    free_ptr(sum);
+    free_ptr(check);
+    free_ptr(sum2);
+    free_ptr(yes);*/
+
+    goodbye_everybody();
+
     int a = 2;
 	int *ptr = &a;
 	int *sum4 = edd(2,ptr);
-	
+    
 
 	int *sum3 = edd(stuff,check);
 
