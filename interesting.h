@@ -53,7 +53,7 @@ void free_ptr(int *numbrs) {
     people[how_many - 1]->index = how_many - 1;
 
     //printf("%s\n",headr->name);
-    printf("%s %s\n",people[headr->index]->name,people[how_many - 1]->name); 
+    //printf("%s %s\n",people[headr->index]->name,people[how_many - 1]->name); 
 
     how_many -= 1;
 
