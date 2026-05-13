@@ -1,11 +1,11 @@
 start_machine: tokenizer.c
-	gcc tokenizer.c -o tokenizer
+	gcc -g  tokenizer.c -o tokenizer
 
 get_names: tokenizer $(MAIN)	
 	: > stuff.c && ./tokenizer $(MAIN)
 
 do_stuff: stuff.c
-	clang -o stuff stuff.c && ./stuff
+	clang -g stuff.c -o stuff && valgrind --leak-check=full --show-leak-kinds=all ./stuff
 
 run: start_machine get_names do_stuff
 
